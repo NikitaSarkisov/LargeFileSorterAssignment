@@ -41,7 +41,7 @@ namespace LargeFileSorter
             {
                 source = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None);
                 map = new FileStream(mapPath, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
-                Console.WriteLine("-- Source file is {0} bytes", source.Length);
+                Console.WriteLine(" - Source file is {0} bytes", source.Length);
 
                 // Step 1
                 // Building a binary map of the source text file.
