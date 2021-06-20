@@ -10,16 +10,16 @@ namespace LargeFileSorter
     {
         private class Options
         {
-            [Option("File", Default = "", HelpText = "File to sort. If empty file with this name will be generated")]
+            [Option("file", Required = true, HelpText = "Path to file. If file does not exist random file will be generated.")]
             public string File { get; set; }
 
-            [Option("LineCount", Default = 1000, HelpText = "Number of line to generate")]
+            [Option("line_count", Default = 1000, HelpText = "Number of lines for random file generator.")]
             public int LineCount { get; set; }
 
-            [Option("MaxLength", Default = 50, HelpText = "Max line length")]
+            [Option("max_length", Default = 50, HelpText = "Max line length for random file generator.")]
             public int LineMaxLength { get; set; }
 
-            [Option("Validate", Default = false, HelpText = "Validate the sorted file")]
+            [Option("validate", Default = false, HelpText = "Validate whether output file is indeed sorted (for testing). ")]
             public bool Validate { get; set; }
         }
 
@@ -31,28 +31,37 @@ namespace LargeFileSorter
 
         private static void RunOptions(Options opts)
         {
+            opts.File = opts.File.Trim();
             Encoding encoding;
-            opts.File = Path.GetFullPath(opts.File);
+            try
+            {
+                opts.File = Path.GetFullPath(opts.File);
+            }
+            catch
+            {
+                Console.WriteLine("File is not a valid path!");
+                return;
+            }
 
             if (!File.Exists(opts.File))
             {
                 Console.WriteLine("Generating new random text file...");
                 Console.WriteLine("Number of lines: {0}, Max line length: {1}", opts.LineCount, opts.LineMaxLength);
-                opts.File = GenerateRandomFile(opts.File, opts.LineCount, opts.LineMaxLength, out encoding);
+                GenerateRandomFile(opts.File, opts.LineCount, opts.LineMaxLength, out encoding);
                 Console.WriteLine("Generated {0}", opts.File);
                 Console.WriteLine("");
             }
             else
             {
-                Console.WriteLine("Using file {0}", opts.File);
+                Console.WriteLine("File {0} exists.", opts.File);
                 encoding = GetEncoding(opts.File);
             }
 
             Console.WriteLine("Sorting file {0}...", opts.File);
-            FileSorter largeFileSorter = new FileSorter(encoding);
+            FileSorter fileSorter = new FileSorter(encoding);
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            string sorted = largeFileSorter.Sort(opts.File);
+            string sorted = fileSorter.Sort(opts.File);
             stopwatch.Stop();
             Console.WriteLine("Done.");
             Console.WriteLine("Sorted file at: {0}", sorted);
@@ -65,7 +74,7 @@ namespace LargeFileSorter
                 bool valid = SortedFileChecker(sorted);
                 Console.WriteLine("Done.");
                 if (valid) Console.WriteLine("File is valid!");
-                else Console.WriteLine("File is not valid!");
+                else Console.WriteLine("File is NOT valid!");
                 Console.WriteLine("");
             }
         }
@@ -79,15 +88,10 @@ namespace LargeFileSorter
             }
         }
 
-        public static string GenerateRandomFile(string path, int lineCount, int lineMaxLenght, out Encoding encoding)
+        public static void GenerateRandomFile(string path, int lineCount, int lineMaxLenght, out Encoding encoding)
         {
             Random rnd = new Random();
             const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-
-            if (string.IsNullOrEmpty(path))
-            {
-                path = Path.GetFullPath(DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()) + ".txt";
-            }
 
             using (var writer = new StreamWriter(path))
             {
@@ -106,8 +110,6 @@ namespace LargeFileSorter
 
                 encoding = writer.Encoding;
             }
-
-            return path;
         }
 
         public static bool SortedFileChecker(string filename)
@@ -117,10 +119,10 @@ namespace LargeFileSorter
             using (var reader = new StreamReader(filename))
             {
                 string line1 = reader.ReadLine();
-                while (reader.EndOfStream)
+                while (!reader.EndOfStream)
                 {
                     string line2 = reader.ReadLine();
-                    if (string.Compare(line1, line2, StringComparison.Ordinal) < 0)
+                    if (string.Compare(line1, line2, StringComparison.Ordinal) > 0)
                     {
                         valid = false;
                         break;

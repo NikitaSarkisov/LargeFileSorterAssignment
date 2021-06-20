@@ -47,7 +47,7 @@ namespace LargeFileSorter
                 // Building a binary map of the source text file.
                 // The map contains a Position and Length of every line in source file.
                 // Each record in map file is 12 bytes long: int (4bytes) + long (8bytes).
-                Console.WriteLine("-- Building file map...");
+                Console.WriteLine(" - Building file map...");
                 int maxLength = BuildMap();
                 // The buffer is created to hold a line in binary form.
                 // It is set to fit the longest line.
@@ -59,12 +59,12 @@ namespace LargeFileSorter
                 // The values for caparison a read from the source file during sorting.
                 // As a  result map file is sorted. (Index-based sort).
                 // Comb sort is the sorting algorithm.
-                Console.WriteLine("-- Sorting file map...");
+                Console.WriteLine(" - Sorting file map...");
                 MapSort();
 
                 // Step 3
                 // Generate the sorted text file.
-                Console.WriteLine("-- Writing sorted file...");
+                Console.WriteLine(" - Writing sorted file...");
                 outputfile = Write();
             }
             finally

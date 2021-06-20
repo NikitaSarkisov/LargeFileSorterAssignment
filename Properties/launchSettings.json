@@ -1,8 +1,7 @@
 {
   "profiles": {
     "LargeFileSorter": {
-      "commandName": "Project",
-      "commandLineArgs": "--File 1.txt"
+      "commandName": "Project"
     },
     "Docker": {
       "commandName": "Docker"
