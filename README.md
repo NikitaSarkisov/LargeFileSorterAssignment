@@ -26,11 +26,6 @@ Copyright (C) 2021 LargeFileSorter
   --version       Display version information.
 ```
 
-## Docker:
-```
-docker run --rm -it -v ${PWD}:/data nikitasarkisov/largefilesorter --file /data/1.txt
-```
-
 ## Алгоритм
 
 1. Перед началом сортировки приложение составляет "карту строк" (бинарный файл указателей на строки исходного файла).
@@ -47,6 +42,13 @@ docker run --rm -it -v ${PWD}:/data nikitasarkisov/largefilesorter --file /data/
 
 При использовании опции `--validate` приложение проверит готовый файл, что он действительно отсортирован.
 
+## Docker:
+
+Приложение также можно запустить в контейнере, однако на WSL2 скорость заметно меньше из за трансляции файловой системы.
+
+```
+docker run --rm -it -v ${PWD}:/data nikitasarkisov/largefilesorter --file /data/1.txt
+```
 
 ## Пример
 
